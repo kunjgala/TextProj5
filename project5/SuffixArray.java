@@ -1,7 +1,11 @@
 package project5;
 import java.util.*;
 
+//I have used an algorithm which is efficient than the brute force implememntation with a time complexity of O(N.(Log N)^2)
+
 public class SuffixArray {
+
+   // Suffix class represents a suffix with its index, rank, and next rank
 
   public static class Suffix implements Comparable<Suffix> {
     int suffixIndex;
@@ -20,26 +24,38 @@ public class SuffixArray {
       return Integer.compare(nextRank, s.nextRank);
     }
   }
-  
+
+  // Function to create the suffix array from an input string
   public static ArrayList<Integer> createSuffixArray(String inputString) {
     int n = inputString.length();
     Suffix[] suffixes = new Suffix[n];
+
+    // Create suffix objects with their initial ranks
          
     for (int i = 0; i < n; i++) {
       suffixes[i] = new Suffix(i, inputString.charAt(i) - '$', 0);
     }
+
+    // Assign next ranks to suffixes based on their positions
+
     for (int i = 0; i < n; i++)
       suffixes[i].nextRank = (i + 1 < n ? suffixes[i + 1].suffixRank : -1);
  
+    // Sort the suffixes array using compareTo method
+
     Arrays.sort(suffixes);
   
     int[] indexes = new int[n];
+
+    // Perform iteration to update suffix ranks and next ranks
 
     for (int length = 4; length < 2 * n; length <<= 1) {
       updateSuffixRanks(suffixes, indexes, length);
       updateNextRanks(suffixes, indexes, n, length);
       Arrays.sort(suffixes);
     }
+
+    // Convert the suffix array to ArrayList<Integer>
     
     ArrayList<Integer> suffixArray = new ArrayList<>();
     for (int i = 0; i < n; i++)
@@ -48,6 +64,7 @@ public class SuffixArray {
     return suffixArray;
   }   
 
+  // Helper function to update suffix ranks based on previous ranks and next ranks
   private static void updateSuffixRanks(Suffix[] suffixes, int[] indexes, int length) {
     int rank = 0;
     int prev = suffixes[0].suffixRank;
@@ -65,6 +82,8 @@ public class SuffixArray {
       indexes[suffixes[i].suffixIndex] = i;
     }
   }
+
+  // Helper function to update next ranks of suffixes
 
   private static void updateNextRanks(Suffix[] suffixes, int[] indexes, int n, int length) {
     for (int i = 0; i < n; i++) {
